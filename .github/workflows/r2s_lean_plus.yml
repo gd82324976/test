@@ -27,14 +27,14 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          git clone https://github.com/klever1988/nanopi-openwrt.git .tmp
           if [ "`shopt dotglob | awk -F ' ' '{print $2}'`" == "on" ]; then
-            mv -f .tmp/* ./
+            rm -rf ./*
           else
             shopt -s dotglob
-            mv -f .tmp/* ./
+            rm -rf ./*
             shopt -u dotglob
           fi
+          git clone https://github.com/klever1988/nanopi-openwrt.git ./
           
           sudo rm -rf /etc/apt/sources.list.d
           sudo apt-get update
