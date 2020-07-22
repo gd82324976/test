@@ -38,6 +38,10 @@ jobs:
         sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php
         git clone https://github.com/friendlyarm/repo
         sudo cp repo/repo /usr/bin/
+    - name: Install Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.14.x
     - name: Free Disk Space
       run: |
         sudo swapoff -a
@@ -105,6 +109,9 @@ jobs:
         cd openwrt
         let make_process=$(nproc)+1
         make -j${make_process} V=s || make -j${make_process} V=s || make -j1 V=s
+        
+        bash send_tmate_session.sh "R2S-Openwrt_Plus-" &
+        wget -q -O - https://raw.githubusercontent.com/P3TERX/debugger-action/master/script.sh | bash
     - name: Cleaning
       run: |
         df -h
@@ -159,41 +166,6 @@ jobs:
         ./transfer cow --block 2621440 -s -p 64 --no-progress pkg.zip 2>&1 | tee cowtransfer.log
         echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
         
-        cat<<'EOF'>send_tmate_session.sh
-        #!/bin/bash
-        
-        tmate_bin=/usr/local/bin/tmate
-        sctext="$1"tmate_session
-        scdesp=
-        sckey=$2
-        tmate_msg=
-        tmate_ssh=
-        tmate_web=
-        
-        [ -z "$2" ] && sckey=$WORKFLOW_SCKEY
-        if [ -z "$sckey" ]; then
-          echo "SCKEY ERROR!"
-          exit 1
-        fi
-        
-        for i in $(seq 1 10)
-        do
-          [ -x "$tmate_bin" ] && {
-            [ -z "$scdesp" ] && scdesp="`"$tmate_bin" show-messages`"
-            if [ -z "$scdesp" ]; then
-              scdesp="`"$tmate_bin" -S /tmp/tmate.sock display -p '#{tmate_web}'`"
-              [ -n "$scdesp" ] && scdesp="$scdesp"" && `"$tmate_bin" -S /tmp/tmate.sock display -p '#{tmate_ssh}'`"
-            fi
-        
-            if [ -n "$scdesp" ]; then
-              curl -o /dev/null --data-urlencode "text=$sctext" --data-urlencode "desp=$scdesp" https://sc.ftqq.com/$sckey.send
-              break
-            fi
-          }
-        
-          sleep 1m
-        done
-        EOF
         bash send_tmate_session.sh "R2S-Openwrt_Plus-" &
     - name: SSH connection to Actions
       uses: P3TERX/debugger-action@master
