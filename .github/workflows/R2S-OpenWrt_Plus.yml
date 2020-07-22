@@ -61,6 +61,9 @@ jobs:
         cd openwrt
         cp -r ../SCRIPTS/. ./
         sed -i '/##最后的收尾工作/isvn co https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-passwall package/lienol/luci-app-passwall' 02_prepare_package.sh
+        sed -i '/##最后的收尾工作/isvn co https://github.com/Lienol/openwrt-package/trunk/package/brook package/new/brook' 02_prepare_package.sh
+        sed -i '/##最后的收尾工作/isvn co https://github.com/Lienol/openwrt-package/trunk/package/tcping package/new/tcping' 02_prepare_package.sh
+        sed -i '/##最后的收尾工作/isvn co https://github.com/Lienol/openwrt-package/trunk/package/trojan-go package/new/trojan-go' 02_prepare_package.sh
         /bin/bash 02_prepare_package.sh
     - name: Convert Translation
       run: |
