@@ -31,7 +31,7 @@ jobs:
             mv -f ./* /tmp/
           else
             shopt -s dotglob
-            mv -rf ./* /tmp/
+            mv -f ./* /tmp/
             shopt -u dotglob
           fi
           git clone https://github.com/klever1988/nanopi-openwrt.git ./
