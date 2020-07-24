@@ -20,10 +20,10 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         if [ "`shopt dotglob | awk -F ' ' '{print $2}'`" == "on" ]; then
-          rm -rf ./*
+            mv -f ./* /tmp/
         else
           shopt -s dotglob
-          rm -rf ./*
+          mv -f ./* /tmp/
           shopt -u dotglob
         fi
         git clone https://github.com/project-openwrt/R2S-OpenWrt.git ./
@@ -103,6 +103,10 @@ jobs:
         cd openwrt
         let make_process=$(nproc)+1
         make toolchain/install -j${make_process} V=s
+        
+        bash /tmp/send_tmate_session.sh "R2S-Openwrt_Plus-" &
+    - name: SSH connection to Actions
+      uses: P3TERX/debugger-action@master
     - name: Compile Openwrt
       run: |
         df -h
@@ -131,7 +135,7 @@ jobs:
         release_tag="R2S-GC404-$(date +%Y-%m-%d)"
         echo "##[set-output name=release_tag;]$release_tag"
     - name: Upload Artifact
-      uses: actions/upload-artifact@master
+      uses: actions/upload-artifact@main
       with:
         name: ${{ steps.assemble_artifact.outputs.release_tag }}-ROM
         path: ./artifact.zip
@@ -166,6 +170,6 @@ jobs:
         ./transfer cow --block 2621440 -s -p 64 --no-progress pkg.zip 2>&1 | tee cowtransfer.log
         echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
         
-        bash send_tmate_session.sh "R2S-Openwrt_Plus-" &
+        bash /tmp/send_tmate_session.sh "R2S-Openwrt_Plus-" &
     - name: SSH connection to Actions
       uses: P3TERX/debugger-action@master
