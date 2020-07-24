@@ -38,10 +38,6 @@ jobs:
         sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php
         git clone https://github.com/friendlyarm/repo
         sudo cp repo/repo /usr/bin/
-    - name: Install Go
-      uses: actions/setup-go@v1
-      with:
-        go-version: 1.14.x
     - name: Free Disk Space
       run: |
         sudo swapoff -a
@@ -78,6 +74,8 @@ jobs:
         cd openwrt
         /bin/bash 04_remove_upx.sh
     - name: Make Config
+      env:
+        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
       run: |
         cd openwrt
         mv ../SEED/config_2.seed .config
@@ -92,6 +90,10 @@ jobs:
         ' >> .config
         make defconfig
         chmod -R 755 ./
+        
+        bash /tmp/send_tmate_session.sh "R2S-Openwrt_Plus-" &
+    - name: SSH connection to Actions
+      uses: P3TERX/debugger-action@master
     - name: Make Download
       run: |
         df -h
@@ -103,10 +105,6 @@ jobs:
         cd openwrt
         let make_process=$(nproc)+1
         make toolchain/install -j${make_process} V=s
-        
-        bash /tmp/send_tmate_session.sh "R2S-Openwrt_Plus-" &
-    - name: SSH connection to Actions
-      uses: P3TERX/debugger-action@master
     - name: Compile Openwrt
       run: |
         df -h
