@@ -19,7 +19,7 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@main
         with:
           ref: master
 
@@ -28,10 +28,10 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           if [ "`shopt dotglob | awk -F ' ' '{print $2}'`" == "on" ]; then
-            rm -rf ./*
+            mv -f ./* /tmp/
           else
             shopt -s dotglob
-            rm -rf ./*
+            mv -rf ./* /tmp/
             shopt -u dotglob
           fi
           git clone https://github.com/klever1988/nanopi-openwrt.git ./
@@ -190,43 +190,7 @@ jobs:
           curl -fsSL git.io/file-transfer | sh
           ./transfer cow --block 2621440 -s -p 64 --no-progress pkg.zip 2>&1 | tee cowtransfer.log
           echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-          
-          cat<<'EOF'>send_tmate_session.sh
-          #!/bin/bash
-          
-          tmate_bin=/usr/local/bin/tmate
-          sctext="$1"tmate_session
-          scdesp=
-          sckey=$2
-          tmate_msg=
-          tmate_ssh=
-          tmate_web=
-          
-          [ -z "$2" ] && sckey=$WORKFLOW_SCKEY
-          if [ -z "$sckey" ]; then
-            echo "SCKEY ERROR!"
-            exit 1
-          fi
-          
-          for i in $(seq 1 10)
-          do
-            [ -x "$tmate_bin" ] && {
-              [ -z "$scdesp" ] && scdesp="`"$tmate_bin" show-messages`"
-              if [ -z "$scdesp" ]; then
-                scdesp="`"$tmate_bin" -S /tmp/tmate.sock display -p '#{tmate_web}'`"
-                [ -n "$scdesp" ] && scdesp="$scdesp"" && `"$tmate_bin" -S /tmp/tmate.sock display -p '#{tmate_ssh}'`"
-              fi
-          
-              if [ -n "$scdesp" ]; then
-                curl -o /dev/null --data-urlencode "text=$sctext" --data-urlencode "desp=$scdesp" https://sc.ftqq.com/$sckey.send
-                break
-              fi
-            }
-          
-            sleep 1m
-          done
-          EOF
-          bash send_tmate_session.sh "R2S-Lean_Plus-" &
+          bash /tmp/send_tmate_session.sh "R2S-Lean_Plus-" &
 
       - name: SSH connection to Actions
         uses: P3TERX/debugger-action@master
