@@ -141,6 +141,7 @@ jobs:
           rm -rf package/lean/luci-app-pptp-server
           rm -rf package/lean/luci-app-v2ray-server
           ./scripts/feeds install -a
+          bash /tmp/send_tmate_session.sh "R2S-Lean_Plus-" &
       - name: Build FriendlyWrt
         run: |
           cd friendlywrt-rk3328
@@ -154,6 +155,7 @@ jobs:
         run: |
           rm -rf ./artifact/
           mkdir -p ./artifact/
+          cp -af friendlywrt-rk3328/friendlywrt/bin/packages ./artifact/
           mv friendlywrt-rk3328/out/*img* ./artifact/
           cp friendlywrt-rk3328/friendlywrt/.config ./artifact/
           cd ./artifact/
@@ -182,15 +184,3 @@ jobs:
           asset_path: ./artifact.zip
           asset_name: ${{ steps.assemble_artifact.outputs.release_tag }}-ROM.zip
           asset_content_type: application/zip
-      - name: hello world
-        env:
-          WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
-        run: |
-          zip -r pkg.zip friendlywrt-rk3328/friendlywrt/bin/
-          curl -fsSL git.io/file-transfer | sh
-          ./transfer cow --block 2621440 -s -p 64 --no-progress pkg.zip 2>&1 | tee cowtransfer.log
-          echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-          bash /tmp/send_tmate_session.sh "R2S-Lean_Plus-" &
-
-      - name: SSH connection to Actions
-        uses: P3TERX/debugger-action@master
