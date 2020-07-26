@@ -5,7 +5,7 @@ on:
     branches: 
       - master
     paths:
-      - '.github/workflows/test.yml'
+      - '.github/workflows/send_tmate_session.sh'
 
 jobs:
   build:
