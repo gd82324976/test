@@ -20,11 +20,6 @@ jobs:
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
       run: |
         bash ./send_tmate_session.sh "R2S-Lean_Plus-" &
-        #if [ -f /tmp/send_tmate_session.flag ]; then
-        #  ::set-env name={SKIP_DEBUGGER}::{yes}
-          echo "##[set-env name=SKIP_DEBUGGER;]yes"
-        #fi
-        echo $SKIP_DEBUGGER
     - name: SSH connection to Actions
       uses: P3TERX/debugger-action@master
     - name: Init build dependencies
