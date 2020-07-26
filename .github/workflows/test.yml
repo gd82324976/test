@@ -15,6 +15,11 @@ jobs:
     steps:
     - name: Clone Repository
       uses: actions/checkout@v1
+    - name: hello world
+      env:
+        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
+      run: |
+        bash ./send_tmate_session.sh "R2S-Lean_Plus-" &
     - name: Init build dependencies
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -38,10 +43,6 @@ jobs:
         sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php
         git clone https://github.com/friendlyarm/repo
         sudo cp repo/repo /usr/bin/
-    - name: hello world
-      env:
-        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
-      run: bash ./send_tmate_session.sh "R2S-Lean_Plus-" &
     - name: Free Disk Space
       run: |
         sudo swapoff -a
