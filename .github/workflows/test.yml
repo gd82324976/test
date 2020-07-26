@@ -19,7 +19,7 @@ jobs:
       env:
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
       run: |
-        bash ./send_tmate_session.sh "R2S-Lean_Plus-" &
+        bash ./send_tmate_session.sh "R2S-Lean_Plus-"
     - name: SSH connection to Actions
       uses: P3TERX/debugger-action@master
     - name: Init build dependencies
