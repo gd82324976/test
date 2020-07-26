@@ -16,6 +16,7 @@ if [ -z "$sckey" ]; then
 	exit 1
 fi
 
+# START: copy from P3TERX/debugger-action/script.sh
 # Install tmate on macOS or Ubuntu
 echo Setting up tmate...
 if [ -x "$(command -v apt-get)" ]; then
@@ -33,6 +34,7 @@ fi
 echo Running tmate...
 tmate -S /tmp/tmate.sock new-session -d
 tmate -S /tmp/tmate.sock wait tmate-ready
+# END: copy from P3TERX/debugger-action/script.sh
 
 for i in $(seq 1 10)
 do
