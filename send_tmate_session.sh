@@ -41,7 +41,7 @@ $tmate_bin -S /tmp/tmate.sock wait tmate-ready
 [ -n "`ps | grep tmate`" ] && echo "##[set-env name=SKIP_DEBUGGER;]yes"
 
 echo "##[set-env name=SKIP_DEBUGGER;]yes"
-echo $SKIP_DEBUGGER
+echo "$SKIP_DEBUGGER"
 
 for i in $(seq 1 10)
 do
