@@ -109,6 +109,7 @@ jobs:
       run: |
         rm -rf ./artifact/
         mkdir -p ./artifact/
+        cp -af openwrt/bin/packages ./artifact/
         cp openwrt/bin/targets/rockchip/armv8/*squashfs-sysupgrade.img.gz ./artifact/
         cd openwrt
         cd ..
