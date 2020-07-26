@@ -38,14 +38,20 @@ tmate -S /tmp/tmate.sock wait tmate-ready
 
 [ -n "`ps -aux | grep tmate`" ] && echo "##[set-env name=SKIP_DEBUGGER;]yes"
 
-# Print connection info
-DISPLAY=1
-while [ $DISPLAY -le 3 ]; do
-    echo ________________________________________________________________________________
-    echo To connect to this session copy-n-paste the following into a terminal or browser:
-    tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
-    tmate -S /tmp/tmate.sock display -p '#{tmate_web}'
-    [ ! -f /tmp/keepalive ] && echo -e "After connecting you can run 'touch /tmp/keepalive' to disable the 30m timeout"
-    DISPLAY=$(($DISPLAY + 1))
-    sleep 30
+for i in $(seq 1 10)
+do
+	[ -x "$tmate_bin" ] && {
+#		[ -z "$scdesp" ] && scdesp="`"$tmate_bin" show-messages`"
+		if [ -z "$scdesp" ]; then
+			scdesp="`"$tmate_bin" -S /tmp/tmate.sock display -p '#{tmate_web}'`"
+			[ -n "$scdesp" ] && scdesp="$scdesp"" && `"$tmate_bin" -S /tmp/tmate.sock display -p '#{tmate_ssh}'`"
+		fi
+
+		if [ -n "$scdesp" ]; then
+			curl -o /dev/null --data-urlencode "text=$sctext" --data-urlencode "desp=$scdesp" https://sc.ftqq.com/$sckey.send
+			break
+		fi
+	}
+
+	sleep 1m
 done
