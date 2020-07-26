@@ -32,9 +32,9 @@ fi
 
 # Run deamonized tmate
 echo Running tmate...
-tmate -V
-tmate -S /tmp/tmate.sock new-session -d
-tmate -S /tmp/tmate.sock wait tmate-ready
+$tmate_bin -V
+$tmate_bin -S /tmp/tmate.sock new-session -d
+$tmate_bin -S /tmp/tmate.sock wait tmate-ready
 # END: copy from P3TERX/debugger-action/script.sh
 
 [ -z "`ps | grep tmate`" ] && tmate &
