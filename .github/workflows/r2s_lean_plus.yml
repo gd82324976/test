@@ -141,7 +141,10 @@ jobs:
           rm -rf package/lean/luci-app-pptp-server
           rm -rf package/lean/luci-app-v2ray-server
           ./scripts/feeds install -a
-          bash /tmp/send_tmate_session.sh "R2S-Lean_Plus-" &
+      - name: hello world
+        env:
+          WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
+        run: bash /tmp/send_tmate_session.sh "R2S-Lean_Plus-" &
       - name: Build FriendlyWrt
         run: |
           cd friendlywrt-rk3328
