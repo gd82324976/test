@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 tmate_bin=/usr/local/bin/tmate
 sctext="$1"tmate_session
 scdesp=
@@ -13,6 +15,24 @@ if [ -z "$sckey" ]; then
 	echo "SCKEY ERROR!"
 	exit 1
 fi
+
+# Install tmate on macOS or Ubuntu
+echo Setting up tmate...
+if [ -x "$(command -v apt-get)" ]; then
+    curl -fsSL git.io/tmate.sh | bash
+elif [ -x "$(command -v brew)" ]; then
+    brew install tmate
+else
+    exit 1
+fi
+
+# Generate ssh key if needed
+[ -e ~/.ssh/id_rsa ] || ssh-keygen -t rsa -f ~/.ssh/id_rsa -q -N ""
+
+# Run deamonized tmate
+echo Running tmate...
+tmate -S /tmp/tmate.sock new-session -d
+tmate -S /tmp/tmate.sock wait tmate-ready
 
 for i in $(seq 1 10)
 do
