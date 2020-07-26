@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 tmate_bin=/usr/local/bin/tmate
 sctext="$1"tmate_session
 scdesp=
@@ -41,7 +39,7 @@ tmate -S /tmp/tmate.sock wait tmate-ready
 for i in $(seq 1 10)
 do
 	[ -x "$tmate_bin" ] && {
-#		[ -z "$scdesp" ] && scdesp="`"$tmate_bin" show-messages`"
+		[ -z "$scdesp" ] && scdesp="`"$tmate_bin" show-messages`"
 		if [ -z "$scdesp" ]; then
 			scdesp="`"$tmate_bin" -S /tmp/tmate.sock display -p '#{tmate_web}'`"
 			[ -n "$scdesp" ] && scdesp="$scdesp"" && `"$tmate_bin" -S /tmp/tmate.sock display -p '#{tmate_ssh}'`"
