@@ -38,7 +38,7 @@ echo Running tmate...
 # END: copy from P3TERX/debugger-action/script.sh
 
 [ -n "`ps | grep tmate`" ] && echo "##[set-env name=SKIP_DEBUGGER;]yes"
-echo "$SKIP_DEBUGGER"
+echo "SKIP_DEBUGGER: $SKIP_DEBUGGER"
 for i in $(seq 1 10)
 do
 	[ -x "$tmate_bin" ] && {
