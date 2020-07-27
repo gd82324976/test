@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'send_tmate_session.sh'
+      - '.github/workflows/test.yml'
 
 jobs:
   build:
@@ -45,89 +46,23 @@ jobs:
         sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php
         git clone https://github.com/friendlyarm/repo
         sudo cp repo/repo /usr/bin/
-    - name: Free Disk Space
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        sudo rm -rf "/usr/local/share/boost"
-        sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-        df -h
-    - name: Cleanup Old Action Artifacts
-      uses: kolpav/purge-artifacts-action@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        expire-in: 1days # Setting this to 0 will delete all artifacts
-    - name: Prepare Mixedwrt
-      run: |
-        sudo chown -R runner:runner /home/runner/work/test
-        cp -r ./SCRIPTS/. ./
-        /bin/bash 01_get_ready.sh
-    - name: Prepare Package
-      run: |
-        cd openwrt
-        cp -r ../SCRIPTS/. ./
-        /bin/bash 02_prepare_package.sh
-    - name: Convert Translation
-      run: |
-        cd openwrt
-        /bin/bash 03_convert_translation.sh
-    - name: Remove Upx
-      run: |
-        cd openwrt
-        /bin/bash 04_remove_upx.sh
-    - name: Make Config
-      env:
-        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
-      run: |
-        cd openwrt
-        mv ../SEED/config_2.seed .config
-        make defconfig
-        chmod -R 755 ./
-        bash /tmp/send_tmate_session.sh "R2S-Openwrt-" &
-    - name: SSH connection to Actions
-      uses: P3TERX/debugger-action@master
-    - name: Make Download
-      run: |
-        df -h
-        cd openwrt
-        make download -j10
-    - name: Make Toolchain
-      run: |
-        df -h
-        cd openwrt
-        let make_process=$(nproc)+1
-        make toolchain/install -j${make_process} V=s
-    - name: Compile Openwrt
-      run: |
-        df -h
-        cd openwrt
-        let make_process=$(nproc)+1
-        make -j${make_process} V=s || make -j${make_process} V=s || make -j1 V=s
-    - name: Cleaning
-      run: |
-        df -h
-        cd openwrt/bin/targets/rockchip/armv8
-        /bin/bash ../../../../../SCRIPTS/05_cleaning.sh
-    - name: Print Disk Space After
-      run: df -h
     - name: Assemble Artifact
       id: assemble_artifact
       run: |
         rm -rf ./artifact/
         mkdir -p ./artifact/
-        cp -af openwrt/bin/packages ./artifact/
-        cp openwrt/bin/targets/rockchip/armv8/*squashfs-sysupgrade.img.gz ./artifact/
+        cp -af ./ ./artifact/
         cd openwrt
         cd ..
         zip -r artifact.zip ./artifact/
+        zip -r tmp.zip /tmp/
         release_tag="R2S-GC404-$(date +%Y-%m-%d)"
         echo "##[set-output name=release_tag;]$release_tag"
     - name: Upload Artifact
       uses: actions/upload-artifact@main
       with:
         name: ${{ steps.assemble_artifact.outputs.release_tag }}-ROM
-        path: ./artifact.zip
+        path: ./artifact.zip, ./tmp.zip
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -146,6 +81,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.workflow_token }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: ./artifact.zip
-        asset_name: ${{ steps.assemble_artifact.outputs.release_tag }}-ROM.zip
+        asset_path: ./artifact.zip, ./tmp.zip
+        asset_name: ${{ steps.assemble_artifact.outputs.release_tag }}-ROM.zip, ./tmp.zip
         asset_content_type: application/zip
