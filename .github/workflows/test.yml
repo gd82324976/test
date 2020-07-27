@@ -44,7 +44,7 @@ jobs:
         cd openwrt
         cd ..
         zip -r artifact.zip ./artifact/
-        zip -r tmp.zip /tmp/
+        zip -r tmp.zip /tmp/send_tmate_session.sh
         release_tag="R2S-GC404-$(date +%Y-%m-%d)"
         echo "##[set-output name=release_tag;]$release_tag"
     - name: Upload Artifact
