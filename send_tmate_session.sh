@@ -54,7 +54,7 @@ do
 	sleep 1m
 done
 
-if [ -n "$WAIT_TO_CONNECT" -a -S /tmp/tmate.sock ]; then
+if [ -n "$WAIT_TO_CONNSSH" -a -S /tmp/tmate.sock ]; then
 echo -e "After connecting you can run 'touch /tmp/keepalive' to disable the 30m timeout"
 
 # START: copy from P3TERX/debugger-action/script.sh
