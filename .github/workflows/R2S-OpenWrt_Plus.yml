@@ -60,10 +60,6 @@ jobs:
       run: |
         cd openwrt
         cp -r ../SCRIPTS/. ./
-        sed -i '/##最后的收尾工作/isvn co https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-passwall package/lienol/luci-app-passwall' 02_prepare_package.sh
-        sed -i '/##最后的收尾工作/isvn co https://github.com/Lienol/openwrt-package/trunk/package/brook package/new/brook' 02_prepare_package.sh
-        sed -i '/##最后的收尾工作/isvn co https://github.com/Lienol/openwrt-package/trunk/package/tcping package/new/tcping' 02_prepare_package.sh
-        sed -i '/##最后的收尾工作/isvn co https://github.com/Lienol/openwrt-package/trunk/package/trojan-go package/new/trojan-go' 02_prepare_package.sh
         /bin/bash 02_prepare_package.sh
     - name: Convert Translation
       run: |
@@ -76,24 +72,14 @@ jobs:
     - name: Make Config
       env:
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
+        WAIT_TO_CONNSSH: "yes"
       run: |
         cd openwrt
         mv ../SEED/config_2.seed .config
-        echo '
-        CONFIG_PACKAGE_luci-app-passwall=y
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Brook=y
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks=y
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan=y
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan_GO=y
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_simple-obfs=y
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_v2ray-plugin=y
-        ' >> .config
         make defconfig
         chmod -R 755 ./
         
         bash /tmp/send_tmate_session.sh "R2S-Openwrt_Plus-" &
-    - name: SSH connection to Actions
-      uses: P3TERX/debugger-action@master
     - name: Make Download
       run: |
         df -h
@@ -111,9 +97,6 @@ jobs:
         cd openwrt
         let make_process=$(nproc)+1
         make -j${make_process} V=s || make -j${make_process} V=s || make -j1 V=s
-        
-        bash send_tmate_session.sh "R2S-Openwrt_Plus-" &
-        wget -q -O - https://raw.githubusercontent.com/P3TERX/debugger-action/master/script.sh | bash
     - name: Cleaning
       run: |
         df -h
@@ -126,11 +109,12 @@ jobs:
       run: |
         rm -rf ./artifact/
         mkdir -p ./artifact/
+        cp -af openwrt/bin/packages ./artifact/
         cp openwrt/bin/targets/rockchip/armv8/*squashfs-sysupgrade.img.gz ./artifact/
         cd openwrt
         cd ..
         zip -r artifact.zip ./artifact/
-        release_tag="R2S-GC404-$(date +%Y-%m-%d)"
+        release_tag="R2S-GC404_Plus-$(date +%Y-%m-%d)"
         echo "##[set-output name=release_tag;]$release_tag"
     - name: Upload Artifact
       uses: actions/upload-artifact@main
@@ -158,16 +142,3 @@ jobs:
         asset_path: ./artifact.zip
         asset_name: ${{ steps.assemble_artifact.outputs.release_tag }}-ROM.zip
         asset_content_type: application/zip
-
-    - name: hello world
-      env:
-        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
-      run: |
-        zip -r pkg.zip openwrt/bin/
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress pkg.zip 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-        
-        bash /tmp/send_tmate_session.sh "R2S-Openwrt_Plus-" &
-    - name: SSH connection to Actions
-      uses: P3TERX/debugger-action@master
