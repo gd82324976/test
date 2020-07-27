@@ -80,7 +80,7 @@ jobs:
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
         WAIT_TO_CONNSSH: "yes"
       run: |
-        bash /tmp/send_tmate_session.sh "R2S-Lean_Plus-" &
+        bash /tmp/send_tmate_session.sh "R2S-Lean_Plus-"
     - name: Make Download
       run: |
         df -h
