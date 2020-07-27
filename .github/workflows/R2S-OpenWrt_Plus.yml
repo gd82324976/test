@@ -70,16 +70,17 @@ jobs:
         cd openwrt
         /bin/bash 04_remove_upx.sh
     - name: Make Config
-      env:
-        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
-        WAIT_TO_CONNSSH: "yes"
       run: |
         cd openwrt
         mv ../SEED/config_2.seed .config
         make defconfig
         chmod -R 755 ./
-        
-        bash /tmp/send_tmate_session.sh "R2S-Openwrt_Plus-" &
+    - name: hello world
+      env:
+        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
+        WAIT_TO_CONNSSH: "yes"
+      run: |
+        bash /tmp/send_tmate_session.sh "R2S-Lean_Plus-" &
     - name: Make Download
       run: |
         df -h
