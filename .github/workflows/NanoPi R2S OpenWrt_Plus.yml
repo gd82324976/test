@@ -1,6 +1,11 @@
 name: NanoPi R2S OpenWrt
 
-on: repository_dispatch
+on:
+  push:
+    branches: 
+      - master
+    paths:
+      - '.github/workflows/NanoPi R2S OpenWrt_Plus.yml'
 
 jobs:
   OpenWrt-18_06:
