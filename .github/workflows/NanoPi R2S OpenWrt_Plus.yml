@@ -47,10 +47,23 @@ jobs:
         ./scripts/feeds install -a
         patch -p1 < "${GITHUB_WORKSPACE}/patches/1806-modify_for_r2s.patch"
         sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/files/bin/config_generate
+    - name: hello world
+      env:
+        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
+      run: |
+        bash /tmp/send_tmate_session.sh "NanoPi R2S OpenWrt_Plus 1806-"
     - name: Build OpenWrt-18.06
       run: |
         cd "/home/runner/openwrt"
         cp -f "${GITHUB_WORKSPACE}/configs/1806-config.seed" ".config"
+        echo '
+        CONFIG_PACKAGE_block-mount=y
+        CONFIG_PACKAGE_aria2=y
+        CONFIG_PACKAGE_ariang=y
+        CONFIG_PACKAGE_luci-app-aria2=y
+        CONFIG_PACKAGE_luci-i18n-aria2-zh-cn=y
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan_Go=y
+        ' >> .config
         make defconfig
         make -j$[$(nproc)+1]
         mv -f "bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz" "../openwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz"
@@ -79,6 +92,7 @@ jobs:
       with:
         name: openwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz
         path: /home/runner/openwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz
+
   OpenWrt-Snapshot:
     runs-on: ubuntu-18.04
     steps:
@@ -118,10 +132,23 @@ jobs:
         ./scripts/feeds install -a
         patch -p1 < "${GITHUB_WORKSPACE}/patches/snapshot-modify_for_r2s.patch"
         sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/files/bin/config_generate
+    - name: hello world
+      env:
+        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
+      run: |
+        bash /tmp/send_tmate_session.sh "NanoPi R2S OpenWrt_PLus snapshot-"
     - name: Build OpenWrt-Snapshot
       run: |
         cd /home/runner/openwrt
         cp -f "${GITHUB_WORKSPACE}/configs/snapshot-config.seed" ".config"
+        echo '
+        CONFIG_PACKAGE_block-mount=y
+        CONFIG_PACKAGE_aria2=y
+        CONFIG_PACKAGE_ariang=y
+        CONFIG_PACKAGE_luci-app-aria2=y
+        CONFIG_PACKAGE_luci-i18n-aria2-zh-cn=y
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan_Go=y
+        ' >> .config
         make defconfig
         make -j$[$(nproc)+1]
         mv -f "bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz" "../openwrt-snapshot-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz"
@@ -139,6 +166,15 @@ jobs:
       timeout-minutes: 30
       run: |
         cd "/home/runner"
+        sed 's/.*api\.telegram\.org/#&/' ${GITHUB_WORKSPACE}/scripts/upload_firmware.sh
+        echo '
+        echo "Released Date: $released_date"
+        echo "Version: $firmware_version"
+        echo "SHA256SUM Hash of EXT4 Firmware: $ext4_image_hash"
+        echo "SHA256SUM Hash of SquashFS Firmware: $squashfs_image_hash"
+        echo "Cow Download Link: $cow_download_link"
+        echo "Wet Download Link: $wet_download_link"
+        ' >> ${GITHUB_WORKSPACE}/scripts/upload_firmware.sh
         ${GITHUB_WORKSPACE}/scripts/upload_firmware.sh "snapshot" "${{ secrets.TELEGRAM_BOT_TOKEN }}" || exit 0
     - name: Upload OpenWrt-Snapshot EXT4 Firmware
       uses: actions/upload-artifact@v2
@@ -150,6 +186,7 @@ jobs:
       with:
         name: openwrt-snapshot-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz
         path: /home/runner/openwrt-snapshot-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz
+
   Cleanup-Old-Artifacts:
     needs: [OpenWrt-18_06,OpenWrt-Snapshot]
     runs-on: ubuntu-18.04
