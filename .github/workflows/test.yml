@@ -1,0 +1,43 @@
+name: test
+
+on:
+  push:
+    branches: 
+      - master
+    paths:
+      - '.github/workflows/test.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+#    if: github.event.sender.id == 45143996
+    
+    steps:
+    - name: Clone Repository
+      uses: actions/checkout@v1
+    - name: Init build dependencies
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        git clone -b master https://git.openwrt.org/openwrt/openwrt.git openwrt
+        cd openwrt
+        echo -e '\nsrc-git lienol https://github.com/Lienol/openwrt-package' >> feeds.conf.default
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+    - name: Make Download
+      run: |
+        df -h
+        cd openwrt
+        make download -j10
+    - name: Make Toolchain
+      run: |
+        df -h
+        cd openwrt
+        let make_process=$(nproc)+1
+        make toolchain/install -j${make_process} V=s
+    - name: hello world
+      env:
+        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
+        WAIT_TO_CONNSSH: "yes"
+      run: |
+        bash /tmp/send_tmate_session.sh "R2S-Test-"
