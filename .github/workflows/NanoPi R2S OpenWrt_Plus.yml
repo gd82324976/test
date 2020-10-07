@@ -39,8 +39,15 @@ jobs:
         sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /usr/local/lib/android /opt/ghc /swapfile
     - name: Clone Source
       run: |
+        cd /tmp
+        svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
         cd "/home/runner"
         git clone --branch "openwrt-18.06-k5.4" --single-branch "https://github.com/project-openwrt/openwrt" "openwrt"
+        if [ -d "/tmp/luci-app-passwall" -a -d "./openwrt/package/lienol/luci-app-passwall" ]; then
+          rm -fr "./openwrt/package/lienol/luci-app-passwall"
+          mv -f "/tmp/luci-app-passwall" "./openwrt/package/lienol/"
+          echo "latest passwall version"
+        fi
         sudo chown -R runner:runner "openwrt"
         cd "/home/runner/openwrt"
         ./scripts/feeds update -a
