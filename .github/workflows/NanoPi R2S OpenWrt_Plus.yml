@@ -18,7 +18,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         if [ "`shopt dotglob | awk -F ' ' '{print $2}'`" == "on" ]; then
-            mv -f ./* /tmp/
+          mv -f ./* /tmp/
         else
           shopt -s dotglob
           mv -f ./* /tmp/
@@ -46,6 +46,7 @@ jobs:
         if [ -d "/tmp/luci-app-passwall" -a -d "./openwrt/package/lienol/luci-app-passwall" ]; then
           rm -fr "./openwrt/package/lienol/luci-app-passwall"
           mv -f "/tmp/luci-app-passwall" "./openwrt/package/lienol/"
+          wget -O ./openwrt/package/lienol/trojan-go/Makefile https://raw.githubusercontent.com/xiaorouji/openwrt-package/master/package/trojan-go/Makefile
           echo "latest passwall version"
         fi
         sudo chown -R runner:runner "openwrt"
@@ -82,6 +83,11 @@ jobs:
         mv -f "bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz" "../openwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz"
         mv -f "bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz" "../openwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz"
         mv -f "bin/targets/rockchip/armv8/sha256sums" "../openwrt-18.06-sha256sums"
+    - name: Upload OpenWrt-18.06 SHA256SUM Hash
+      uses: actions/upload-artifact@v2
+      with:
+        name: openwrt-18.06-sha256sums
+        path: /home/runner/openwrt-18.06-sha256sums
     - name: Upload OpenWrt-18.06 EXT4 Firmware
       uses: actions/upload-artifact@v2
       with:
@@ -103,7 +109,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         if [ "`shopt dotglob | awk -F ' ' '{print $2}'`" == "on" ]; then
-            mv -f ./* /tmp/
+          mv -f ./* /tmp/
         else
           shopt -s dotglob
           mv -f ./* /tmp/
@@ -160,6 +166,11 @@ jobs:
         mv -f "bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz" "../openwrt-snapshot-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz"
         mv -f "bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz" "../openwrt-snapshot-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz"
         mv -f "bin/targets/rockchip/armv8/sha256sums" "../openwrt-snapshot-sha256sums"
+    - name: Upload OpenWrt-Snapshot SHA256SUM Hash
+      uses: actions/upload-artifact@v2
+      with:
+        name: openwrt-snapshot-sha256sums
+        path: /home/runner/openwrt-snapshot-sha256sums
     - name: Upload OpenWrt-Snapshot EXT4 Firmware
       uses: actions/upload-artifact@v2
       with:
