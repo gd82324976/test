@@ -19,4 +19,4 @@ jobs:
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
         WAIT_TO_CONNSSH: "yes"
       run: |
-        bash ./send_tmate_session.sh "R2S-Test-"
+        bash ./send_tmate_session.sh "Test-"
