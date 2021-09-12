@@ -16,10 +16,10 @@ jobs:
     - name: Init Building Dependencies
       env:
         DEBIAN_FRONTEND: noninteractive
-        REPO_OWNER: ${{ github.repository_owner }}
-        REPO_NAME: ${{ github.repository }}
+        WORKFLOW_TEST_SH: ${{ secrets.workflow_test_sh }}
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
         WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
         WAIT_TO_CONNSSH: "yes"
       run: |
+        echo $WORKFLOW_TEST_SH | bash
         bash ./send_tmate_session.sh "Test-"
