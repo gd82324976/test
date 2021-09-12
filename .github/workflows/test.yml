@@ -16,11 +16,10 @@ jobs:
     - name: Init Building Dependencies
       env:
         DEBIAN_FRONTEND: noninteractive
+        REPO_OWNER: ${{ github.github.repository_owner }}
+        REPO_NAME: ${{ github.github.repository_name }}
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
         WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
         WAIT_TO_CONNSSH: "yes"
       run: |
-        echo test > /tmp/test.txt
-        export AUTH="Authorization: token ${{ secrets.WORKFLOW_TOKEN }}"
-        curl -T /tmp/test.txt -H "$AUTH" -H "Content-Type: application/octet-stream" https://uploads.github.com/repos/gd82324976/test/releases/49401056/assets?name=test
         bash ./send_tmate_session.sh "Test-"
