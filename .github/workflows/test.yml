@@ -6,7 +6,7 @@ on:
       - master
     paths:
       - '.github/workflows/test.yml'
-
+ 
 jobs:
   build:
     runs-on: ubuntu-18.04
