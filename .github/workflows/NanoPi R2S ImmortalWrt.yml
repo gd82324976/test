@@ -8,7 +8,7 @@ on:
       - '.github/workflows/NanoPi R2S ImmortalWrt.yml'
 
 jobs:
-  OpenWrt-18_06:
+  ImmortalWrt-18_06:
     runs-on: ubuntu-18.04
     steps:
     - name: Checkout Repository
@@ -24,8 +24,6 @@ jobs:
           mv -f ./* /tmp/
           shopt -u dotglob
         fi
-        git clone https://github.com/immortalwrt/immortalwrt.git ./
-        
         docker rmi $(docker images -q)
         sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android*
         sudo -E apt-get update -y
@@ -41,21 +39,23 @@ jobs:
     - name: Clone Source
       run: |
         cd "/home/runner"
-        git clone -b openwrt-18.06 --single-branch "https://github.com/immortalwrt/immortalwrt" "openwrt"
-        curl -o /home/runner/openwrt/1806-config.seed https://raw.githubusercontent.com/1715173329/nanopi-r2s-openwrt/master/configs/1806-config.seed
-        sudo chown -R runner:runner "openwrt"
-        cd "/home/runner/openwrt"
+        git clone --branch "openwrt-18.06-k5.4" --single-branch "https://github.com/immortalwrt/immortalwrt" "immortalwrt"
+        curl -o /home/runner/immortalwrt/1806-config.seed https://raw.githubusercontent.com/1715173329/nanopi-r2s-openwrt/master/configs/1806-config.seed
+        curl -o /home/runner/immortalwrt/1806-modify_for_r2s.patch https://raw.githubusercontent.com/1715173329/nanopi-r2s-openwrt/master/patchs/1806-modify_for_r2s.patch
+        sudo chown -R runner:runner "immortalwrt"
+        cd "/home/runner/immortalwrt"
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+        patch -p1 < "./1806-modify_for_r2s.patch"
         sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/files/bin/config_generate
 #    - name: hello world
 #      env:
 #        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
 #      run: |
-#        bash /tmp/send_tmate_session.sh "NanoPi R2S OpenWrt_Plus 1806-"
-    - name: Build OpenWrt-18.06
+#        bash /tmp/send_tmate_session.sh "NanoPi R2S immortalwrt_Plus 1806-"
+    - name: Build ImmortalWrt-18.06
       run: |
-        cd "/home/runner/openwrt"
+        cd "/home/runner/immortalwrt"
         cp -f "./1806-config.seed" ".config"
         echo '
         CONFIG_PACKAGE_aria2=y
@@ -65,29 +65,29 @@ jobs:
         ' >> .config
         make defconfig
         make -j$[$(nproc)+1]
-        mv -f "bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz" "../openwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz"
-        mv -f "bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz" "../openwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz"
-        mv -f "bin/targets/rockchip/armv8/sha256sums" "../openwrt-18.06-sha256sums"
-    - name: Rebuild OpenWrt-18.06 to Collect Error Log
+        mv -f "bin/targets/rockchip/armv8/immortalwrt-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz" "../immortalwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz"
+        mv -f "bin/targets/rockchip/armv8/immortalwrt-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz" "../immortalwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz"
+        mv -f "bin/targets/rockchip/armv8/sha256sums" "../immortalwrt-18.06-sha256sums"
+    - name: Rebuild ImmortalWrt-18.06 to Collect Error Log
       if: failure()
       run: |
-        cd "/home/runner/openwrt"
+        cd "/home/runner/immortalwrt"
         make -j1 V=s
-        mv -f "bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz" "../openwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz"
-        mv -f "bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz" "../openwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz"
-        mv -f "bin/targets/rockchip/armv8/sha256sums" "../openwrt-18.06-sha256sums"
-    - name: Upload OpenWrt-18.06 SHA256SUM Hash
+        mv -f "bin/targets/rockchip/armv8/immortalwrt-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz" "../immortalwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz"
+        mv -f "bin/targets/rockchip/armv8/immortalwrt-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz" "../immortalwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz"
+        mv -f "bin/targets/rockchip/armv8/sha256sums" "../immortalwrt-18.06-sha256sums"
+    - name: Upload ImmortalWrt-18.06 SHA256SUM Hash
       uses: actions/upload-artifact@v2
       with:
-        name: openwrt-18.06-sha256sums
-        path: /home/runner/openwrt-18.06-sha256sums
-    - name: Upload OpenWrt-18.06 EXT4 Firmware
+        name: immortalwrt-18.06-sha256sums
+        path: /home/runner/immortalwrt-18.06-sha256sums
+    - name: Upload ImmortalWrt-18.06 EXT4 Firmware
       uses: actions/upload-artifact@v2
       with:
-        name: openwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz
-        path: /home/runner/openwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz
-    - name: Upload OpenWrt-18.06 SquashFS Firmware
+        name: immortalwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz
+        path: /home/runner/immortalwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz
+    - name: Upload ImmortalWrt-18.06 SquashFS Firmware
       uses: actions/upload-artifact@v2
       with:
-        name: openwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz
-        path: /home/runner/openwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz
+        name: immortalwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz
+        path: /home/runner/immortalwrt-18.06-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz
