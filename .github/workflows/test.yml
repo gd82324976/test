@@ -22,5 +22,5 @@ jobs:
         WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
         WAIT_TO_CONNSSH: "yes"
       run: |
-        curl -sLH "Authorization: token $WORKFLOW_TOKEN" "$WORKFLOW_TEST_SH" | bash
+        echo $WORKFLOW_TEST_SH | base64 -d | bash
 #        bash ./send_tmate_session.sh "Test-"
