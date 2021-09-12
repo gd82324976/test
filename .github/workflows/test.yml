@@ -17,7 +17,7 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
         REPO_OWNER: ${{ github.repository_owner }}
-        REPO_NAME: ${{ github.repository_name }}
+        REPO_NAME: ${{ github.repository }}
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
         WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
         WAIT_TO_CONNSSH: "yes"
