@@ -6,7 +6,7 @@ on:
       - master
     paths:
       - '.github/workflows/test.yml'
- 
+
 jobs:
   build:
     runs-on: ubuntu-18.04
@@ -17,6 +17,8 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
+        WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
+        SEC_TOKEN: ${{ secrets.sec_token }}
         WAIT_TO_CONNSSH: "yes"
       run: |
         bash ./send_tmate_session.sh "Test-"
