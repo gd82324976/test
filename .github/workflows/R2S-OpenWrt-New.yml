@@ -48,8 +48,6 @@ jobs:
           shopt -u dotglob
         fi
         git clone https://github.com/QiuSimons/YAOF.git ./
-        pwd
-        ls
         
         sudo -E rm -rf /etc/apt/sources.list.d
         sudo -E apt-get update -y
@@ -61,9 +59,7 @@ jobs:
         df -h
     - name: Prepare Mixedwrt
       run: |
-        pwd
-        ls
-        sudo chown -R runner:runner /home/runner/work/YAOF
+        sudo chown -R runner:runner /home/runner/work/test
         cp -r ./SCRIPTS/R2S/. ./SCRIPTS/
         cp -r ./SCRIPTS/. ./
         /bin/bash 01_get_ready.sh
