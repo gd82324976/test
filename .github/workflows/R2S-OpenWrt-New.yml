@@ -47,7 +47,7 @@ jobs:
           mv -f ./* /tmp/
           shopt -u dotglob
         fi
-        git clone https://github.com/project-openwrt/R2S-OpenWrt.git ./
+        git clone https://github.com/QiuSimons/YAOF.git ./
         
         sudo -E rm -rf /etc/apt/sources.list.d
         sudo -E apt-get update -y
