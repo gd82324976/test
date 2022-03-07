@@ -67,6 +67,9 @@ jobs:
       run: |
         cd openwrt
         cp -r ../SCRIPTS/. ./
+        
+        sed -i 's,xiaorouji/openwrt-passwall/trunk/luci-app-passwall,kenzok8/openwrt-packages/trunk/luci-app-passwall,' 02_prepare_package.sh
+        
         /bin/bash 02_prepare_package.sh
         
         sed -i 's/.*eth.*eth.*eth.*eth.*\/02_network/#&/g' 02_target_only.sh
@@ -88,6 +91,7 @@ jobs:
         cd openwrt
         mv ../SEED/R2S/config.seed .config
         #echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> .config
+        echo -e 'CONFIG_PACKAGE_kmod-mt7601u-ap=y' >> .config
         make defconfig
     - name: Get Architecture
       working-directory: ${{ github.workspace }}/openwrt
