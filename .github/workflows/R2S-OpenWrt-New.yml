@@ -93,7 +93,7 @@ jobs:
         cd openwrt
         mv ../SEED/R2S/config.seed .config
         #echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> .config
-        bash ./send_tmate_session.sh "Test-"
+        bash /tmp/send_tmate_session.sh "Test-"
         make defconfig
     - name: Get Architecture
       working-directory: ${{ github.workspace }}/openwrt
