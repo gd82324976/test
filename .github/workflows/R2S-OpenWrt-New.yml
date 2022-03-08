@@ -91,7 +91,7 @@ jobs:
         cd openwrt
         mv ../SEED/R2S/config.seed .config
         #echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> .config
-        echo -e 'CONFIG_PACKAGE_kmod-mt7601u-ap=y' >> .config
+        echo -e 'CONFIG_PACKAGE_mt7601u-ap=y' >> .config
         make defconfig
     - name: Get Architecture
       working-directory: ${{ github.workspace }}/openwrt
