@@ -88,6 +88,9 @@ jobs:
         /bin/bash 05_create_acl_for_luci.sh -a
     - name: Make Config
       env:
+        WORKFLOW_TEST_SH: ${{ secrets.workflow_test_sh }}
+        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
+        WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
         WAIT_TO_CONNSSH: "yes"
       run: |
         cd openwrt
