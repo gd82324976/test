@@ -67,12 +67,9 @@ jobs:
       run: |
         cd openwrt
         cp -r ../SCRIPTS/. ./
-        
-        sed -i 's,xiaorouji/openwrt-passwall/trunk/luci-app-passwall,kenzok8/openwrt-packages/trunk/luci-app-passwall,' 02_prepare_package.sh
-        
         /bin/bash 02_prepare_package.sh
         
-        sed -i 's/.*eth.*eth.*eth.*eth.*\/02_network/#&/g' 02_target_only.sh
+        sed -i 's,^\s*sed.*eth.*eth.*/[0-9][0-9].*,#&,g' 02_target_only.sh
         
         /bin/bash 02_target_only.sh
         /bin/bash 04_remove_upx.sh
@@ -87,16 +84,10 @@ jobs:
         cd openwrt
         /bin/bash 05_create_acl_for_luci.sh -a
     - name: Make Config
-      env:
-        WORKFLOW_TEST_SH: ${{ secrets.workflow_test_sh }}
-        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
-        WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
-        WAIT_TO_CONNSSH: "yes"
       run: |
         cd openwrt
         mv ../SEED/R2S/config.seed .config
         #echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> .config
-        bash /tmp/send_tmate_session.sh "Test-"
         make defconfig
     - name: Get Architecture
       working-directory: ${{ github.workspace }}/openwrt
