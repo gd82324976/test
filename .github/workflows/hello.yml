@@ -38,5 +38,5 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@main
       with:
-        name: OpenWRT_$(date +%Y-%m-%d)
+        name: OpenWRT_${{ env.latest_release }}
         path: /home/runner/work/artifact/
