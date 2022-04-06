@@ -1,7 +1,15 @@
 name: hello
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      downurl:
+        description: 'openwrt firmware download url'     
+        required: true 
+      connssh:
+        description: 'connect to ssh'
+        required: false 
+        type: boolean 
 
 jobs:
   build:
@@ -13,6 +21,13 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
-        WAIT_TO_CONNSSH: "yes"
+        WORKFLOW_HELLO_SH: ${{ secrets.workflow_test_sh }}
+        WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
+        WAIT_TO_CONNSSH: ${{ github.event.inputs. }}
       run: |
-        bash ./send_tmate_session.sh "hello-"
+        echo $WAIT_TO_CONNSSH
+        if [ $WAIT_TO_CONNSSH = true ]; then
+          bash ./send_tmate_session.sh "hello-"
+        else
+          echo $WORKFLOW_HELLO_SH | base64 -d | bash
+        fi
