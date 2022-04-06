@@ -34,6 +34,7 @@ jobs:
           echo $WORKFLOW_HELLO_SH | base64 -d > ./hello.sh
           sudo bash ./hello.sh $DOWNLOAD_URL
         fi
+        echo "latest_release=$(date +%Y-%m-%d)" >>$GITHUB_ENV
 
     - name: Upload artifact
       uses: actions/upload-artifact@main
