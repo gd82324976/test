@@ -30,7 +30,8 @@ jobs:
         if [ $WAIT_TO_CONNSSH = true ]; then
           bash ./send_tmate_session.sh "hello-"
         else
-          sudo echo $WORKFLOW_HELLO_SH | base64 -d | bash
+          echo $WORKFLOW_HELLO_SH | base64 -d ./hello.sh
+          sudo ./hello.sh $DOWNLOAD_URL
         fi
 
     - name: Upload artifact
