@@ -39,4 +39,4 @@ jobs:
       uses: actions/upload-artifact@main
       with:
         name: OpenWRT_$(date +%Y-%m-%d)
-        path: /home/runner/wokr/artifact/
+        path: /home/runner/work/artifact/
