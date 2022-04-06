@@ -33,7 +33,7 @@ jobs:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       run: |
         if [ $WAIT_TO_CONNSSH = true ]; then
-          bash ./send_tmate_session.sh "hello-"
+          bash ./send_tmate_session.sh "hello_"
         else
           echo $WORKFLOW_HELLO_SH | base64 -d > ./hello.sh
           sudo bash ./hello.sh $DOWNLOAD_URL
