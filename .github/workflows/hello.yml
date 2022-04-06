@@ -1,0 +1,19 @@
+name: hello
+
+on:
+  watch:
+    types: started
+  
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Clone Repository
+      uses: actions/checkout@v1
+    - name: Init Building Dependencies
+      env:
+        DEBIAN_FRONTEND: noninteractive
+        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
+        WAIT_TO_CONNSSH: "yes"
+      run: |
+        bash ./send_tmate_session.sh "hello"
