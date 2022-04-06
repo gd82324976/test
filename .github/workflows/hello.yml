@@ -5,7 +5,7 @@ on:
     inputs:
       downurl:
         description: 'openwrt firmware download url'     
-        required: true 
+        required: false 
       connssh:
         description: 'connect to ssh'
         required: false 
@@ -26,12 +26,13 @@ jobs:
         WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
         DOWNLOAD_URL: ${{ github.event.inputs.downurl }}
         WAIT_TO_CONNSSH: ${{ github.event.inputs.connssh }}
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       run: |
         if [ $WAIT_TO_CONNSSH = true ]; then
           bash ./send_tmate_session.sh "hello-"
         else
           echo $WORKFLOW_HELLO_SH | base64 -d ./hello.sh
-          sudo ./hello.sh $DOWNLOAD_URL
+          sudo bash ./hello.sh $DOWNLOAD_URL
         fi
 
     - name: Upload artifact
