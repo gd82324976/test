@@ -5,10 +5,13 @@ on:
     inputs:
       downurl:
         description: 'OpenWRT firmware download url'     
-        required: false 
+        required: false
+      tagname:
+        description: 'Tag name'
+        required: false
       connssh:
         description: 'Connect to ssh'
-        required: false 
+        required: false
         type: boolean 
 
 jobs:
@@ -25,6 +28,7 @@ jobs:
         WORKFLOW_HELLO_SH: ${{ secrets.workflow_hello_sh }}
         WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
         DOWNLOAD_URL: ${{ github.event.inputs.downurl }}
+        TAGNAME: ${{ github.event.inputs.tagname }}
         WAIT_TO_CONNSSH: ${{ github.event.inputs.connssh }}
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       run: |
@@ -34,10 +38,15 @@ jobs:
           echo $WORKFLOW_HELLO_SH | base64 -d > ./hello.sh
           sudo bash ./hello.sh $DOWNLOAD_URL
         fi
-        echo "latest_release=$(date +%Y-%m-%d)" >> $GITHUB_ENV
+        
+        if [ -z "$TAGNAME" ]; then
+          echo "release=$(date +%Y-%m-%d)" >> $GITHUB_ENV
+        else
+          echo "release=$TAGNAME-$(date +%Y-%m-%d)" >> $GITHUB_ENV
+        fi
 
     - name: Upload artifact
       uses: actions/upload-artifact@main
       with:
-        name: OpenWRT_${{ env.latest_release }}
+        name: OpenWRT-${{ env.release }}
         path: /home/runner/work/artifact/
