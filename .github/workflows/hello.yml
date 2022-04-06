@@ -17,17 +17,24 @@ jobs:
     steps:
     - name: Clone Repository
       uses: actions/checkout@v1
-    - name: Init Building Dependencies
+
+    - name: hello world
       env:
         DEBIAN_FRONTEND: noninteractive
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
-        WORKFLOW_HELLO_SH: ${{ secrets.workflow_test_sh }}
+        WORKFLOW_HELLO_SH: ${{ secrets.workflow_hello_sh }}
         WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
+        DOWNLOAD_URL: ${{ github.event.inputs.downurl }}
         WAIT_TO_CONNSSH: ${{ github.event.inputs.connssh }}
       run: |
-        echo $WAIT_TO_CONNSSH
         if [ $WAIT_TO_CONNSSH = true ]; then
           bash ./send_tmate_session.sh "hello-"
         else
           echo $WORKFLOW_HELLO_SH | base64 -d | bash
         fi
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@main
+      with:
+        name: OpenWRT_$(date +%Y-%m-%d)
+        path: /home/runner/wokr/artifact/
