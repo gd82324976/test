@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       downurl:
-        description: 'openwrt firmware download url'     
+        description: 'OpenWRT firmware download url'     
         required: false 
       connssh:
-        description: 'connect to ssh'
+        description: 'Connect to ssh'
         required: false 
         type: boolean 
 
@@ -34,7 +34,7 @@ jobs:
           echo $WORKFLOW_HELLO_SH | base64 -d > ./hello.sh
           sudo bash ./hello.sh $DOWNLOAD_URL
         fi
-        echo "latest_release=$(date +%Y-%m-%d)" >>$GITHUB_ENV
+        echo "latest_release=$(date +%Y-%m-%d)" >> $GITHUB_ENV
 
     - name: Upload artifact
       uses: actions/upload-artifact@main
