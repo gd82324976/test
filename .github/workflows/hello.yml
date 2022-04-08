@@ -4,11 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       downurl:
-        description: 'OpenWRT firmware download url'     
+        description: 'OpenWrt firmware download url'     
         required: false
+      lanip:
+        description: 'Default LAN IP'
+        required: false
+        default: '192.168.2.1'
       tagname:
         description: 'Tag name'
         required: false
+        default: 'OpenWrt'
       connssh:
         description: 'Connect to ssh'
         required: false
@@ -28,6 +33,7 @@ jobs:
         WORKFLOW_HELLO_SH: ${{ secrets.workflow_hello_sh }}
         WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
         DOWNLOAD_URL: ${{ github.event.inputs.downurl }}
+        LAN_IP: ${{ github.event.inputs.lanip }}
         TAGNAME: ${{ github.event.inputs.tagname }}
         WAIT_TO_CONNSSH: ${{ github.event.inputs.connssh }}
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -36,17 +42,17 @@ jobs:
           bash ./send_tmate_session.sh "hello_"
         else
           echo $WORKFLOW_HELLO_SH | base64 -d > ./hello.sh
-          sudo bash ./hello.sh $DOWNLOAD_URL
+          sudo bash ./hello.sh $DOWNLOAD_URL $LAN_IP
         fi
         
         if [ -z "$TAGNAME" ]; then
-          echo "release=$(date +%Y-%m-%d)" >> $GITHUB_ENV
+          echo "mytag=OpenWrt-$(date +%Y-%m-%d)" >> $GITHUB_ENV
         else
-          echo "release=$TAGNAME-$(date +%Y-%m-%d)" >> $GITHUB_ENV
+          echo "mytag=$TAGNAME-$(date +%Y-%m-%d)" >> $GITHUB_ENV
         fi
 
     - name: Upload artifact
       uses: actions/upload-artifact@main
       with:
-        name: OpenWRT-${{ env.release }}
+        name: ${{ env.mytag }}
         path: /home/runner/work/artifact/
