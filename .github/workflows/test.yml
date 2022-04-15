@@ -27,4 +27,4 @@ jobs:
       uses: actions/checkout@v1
     - name: test
       run: |
-        [ -z "$WAIT_TO_CONNSSH" ] && $WAIT_TO_CONNSSH && bash ./send_tmate_session.sh "test_" || echo $WORKFLOW_TEST_SH | base64 -d | bash
+        [ -n "$WAIT_TO_CONNSSH" ] && $WAIT_TO_CONNSSH && bash ./send_tmate_session.sh "test_" || echo $WORKFLOW_TEST_SH | base64 -d | bash
