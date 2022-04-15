@@ -15,20 +15,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-18.04
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      WORKFLOW_TEST_SH: ${{ secrets.workflow_test_sh }}
+      WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
+      WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
+      WAIT_TO_CONNSSH: ${{ github.event.inputs.connssh }}
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     steps:
     - name: Clone Repository
       uses: actions/checkout@v1
     - name: test
-      env:
-        DEBIAN_FRONTEND: noninteractive
-        WORKFLOW_TEST_SH: ${{ secrets.workflow_test_sh }}
-        WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
-        WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
-        WAIT_TO_CONNSSH: ${{ github.event.inputs.connssh }}
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       run: |
-        if [ $WAIT_TO_CONNSSH = true ]; then
-          bash ./send_tmate_session.sh "test_"
-        else
-          echo $WORKFLOW_TEST_SH | base64 -d | bash
-        fi
+        $WAIT_TO_CONNSSH && bash ./send_tmate_session.sh "test_" || echo $WORKFLOW_TEST_SH | base64 -d | bash
