@@ -10,6 +10,9 @@ on:
         description: 'Default LAN IP'
         required: false
         default: '192.168.2.1'
+      newsize:
+        description: 'Resize IMAGE(bytes)'
+        required: false
       tagname:
         description: 'Tag name'
         required: false
@@ -34,6 +37,7 @@ jobs:
         WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
         DOWNLOAD_URL: ${{ github.event.inputs.downurl }}
         LAN_IP: ${{ github.event.inputs.lanip }}
+        NEW_SIZE: ${{ github.event.inputs.newsize }}
         TAGNAME: ${{ github.event.inputs.tagname }}
         WAIT_TO_CONNSSH: ${{ github.event.inputs.connssh }}
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -42,7 +46,7 @@ jobs:
           bash ./send_tmate_session.sh "hello_"
         else
           echo $WORKFLOW_HELLO_SH | base64 -d > ./hello.sh
-          sudo bash ./hello.sh $DOWNLOAD_URL $LAN_IP
+          sudo bash ./hello.sh $DOWNLOAD_URL $LAN_IP $NEW_SIZE
         fi
         
         if [ -z "$TAGNAME" ]; then
