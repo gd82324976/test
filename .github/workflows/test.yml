@@ -14,7 +14,7 @@ on:
   
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     env:
       DEBIAN_FRONTEND: noninteractive
       WORKFLOW_TEST_SH: ${{ secrets.workflow_test_sh }}
