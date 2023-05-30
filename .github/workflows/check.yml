@@ -5,7 +5,7 @@ on:
     inputs:
       keyword:
         description: 'Keyword'     
-        required: true
+        required: false
       connssh:
         description: 'Connect to ssh'
         required: false
