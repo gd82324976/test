@@ -6,10 +6,18 @@ on:
       keyword:
         description: 'Keyword'     
         required: false
+      number_from:
+        description: 'from number'
+        required: false
+        type: number
+      number_to:
+        description: 'to number'
+        required: false
+        type: number
       connssh:
         description: 'Connect to ssh'
         required: false
-        type: boolean 
+        type: boolean
 
 jobs:
   build:
