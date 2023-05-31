@@ -38,6 +38,11 @@ jobs:
         if [ $WAIT_TO_CONNSSH = true ]; then
           bash ./send_tmate_session.sh "check_"
         else
+          echo "keyword: ${{ github.event.inputs.keyword }}"
+          echo "numfrom: ${{ github.event.inputs.number_from }}"
+          echo "numto: ${{ github.event.inputs.number_to}}"
+          exit
+
           echo $WORKFLOW_CHECK_SH | base64 -d > ./check.sh
           sudo bash ./check.sh "${{ github.event.inputs.keyword }}" "${{ github.event.inputs.number_from }}" "${{ github.event.inputs.number_to}}"
         fi
