@@ -21,24 +21,23 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Clone Repository
       uses: actions/checkout@v1
 
-    - name: hello world
+    - name: check world
       env:
         DEBIAN_FRONTEND: noninteractive
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
         WORKFLOW_CHECK_SH: ${{ secrets.workflow_check_sh }}
         WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
-        KEYWORD: ${{ github.event.inputs.keyword }}
         WAIT_TO_CONNSSH: ${{ github.event.inputs.connssh }}
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       run: |
         if [ $WAIT_TO_CONNSSH = true ]; then
-          bash ./send_tmate_session.sh "hello_"
+          bash ./send_tmate_session.sh "check_"
         else
           echo $WORKFLOW_CHECK_SH | base64 -d > ./check.sh
-          sudo bash ./check.sh "$KEYWORD"
+          sudo bash ./check.sh "${{ github.event.inputs.keyword }}" "${{ github.event.inputs.number_from }}" "${{ github.event.inputs.number_to}}"
         fi
