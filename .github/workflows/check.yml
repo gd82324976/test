@@ -39,5 +39,5 @@ jobs:
           bash ./send_tmate_session.sh "check_"
         else
           echo $WORKFLOW_CHECK_SH | base64 -d > ./check.sh
-          sh ./check.sh
+          bash ./check.sh
         fi
