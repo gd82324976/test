@@ -18,14 +18,7 @@ on:
         description: 'Connect to ssh'
         required: false
         type: boolean
-      name:
-        type: choice
-        description: Who to greet
-        options: 
-        - monalisa
-        - cschleiden
-      environment:
-        type: environment
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -40,7 +33,6 @@ jobs:
         WORKFLOW_CHECK_SH: ${{ secrets.workflow_check_sh }}
         WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
         KEYWORD: ${{ github.event.inputs.keyword }}
-        NUMBER_FROM: ${{ github.event.inputs.number_from }}
         WAIT_TO_CONNSSH: ${{ github.event.inputs.connssh }}
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       run: |
