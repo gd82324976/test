@@ -26,6 +26,7 @@ jobs:
 
     - name: check world
       env:
+        DEBIAN_FRONTEND: noninteractive
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
         WORKFLOW_CHECK_SH: ${{ secrets.workflow_check_sh }}
         WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
