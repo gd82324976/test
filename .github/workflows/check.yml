@@ -9,11 +9,9 @@ on:
       number_from:
         description: 'from number (4 digits)'
         required: false
-        type: number
       number_to:
         description: 'to number (4 digits)'
         required: false
-        type: number
       connssh:
         description: 'Connect to ssh'
         required: false
@@ -28,10 +26,12 @@ jobs:
 
     - name: check world
       env:
-        DEBIAN_FRONTEND: noninteractive
         WORKFLOW_SCKEY: ${{ secrets.workflow_sckey }}
         WORKFLOW_CHECK_SH: ${{ secrets.workflow_check_sh }}
         WORKFLOW_TOKEN: ${{ secrets.workflow_token }}
+        KEYWORD: ${{ github.event.inputs.connssh.keyword }}
+        NUMBER_FROM: ${{ github.event.inputs.number_from }}
+        NUMBER_TO: ${{ github.event.inputs.number_to }}
         WAIT_TO_CONNSSH: ${{ github.event.inputs.connssh }}
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       run: |
@@ -39,5 +39,5 @@ jobs:
           bash ./send_tmate_session.sh "check_"
         else
           echo $WORKFLOW_CHECK_SH | base64 -d > ./check.sh
-          sudo bash ./check.sh "${{ github.event.inputs.keyword }}" "${{ github.event.inputs.number_from }}" "${{ github.event.inputs.number_to}}"
+          sudo bash ./check.sh
         fi
